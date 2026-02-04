@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Aplicación vocales</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#7e57c2">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
+
+<style>
+/* =====================
+   FONDO SUAVE EDUCATIVO
+   ===================== */
+body {
+  margin: 0;
+  font-family: 'Comic Neue', Arial, sans-serif;
+  background-color: #f4f8f4;
+
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      #d7eadf 0px,
+      #d7eadf 1px,
+      transparent 1px,
+      transparent 34px
+    ),
+    linear-gradient(
+      to right,
+      transparent 40px,
+      #b7d9c4 40px,
+      #b7d9c4 43px,
+      transparent 43px
+    );
+
+  background-size: 100% 34px, 100% 100%;
+}
+
+/* =====================
+   CONTENEDOR
+   ===================== */
+.book {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* =====================
+   PÁGINA
+   ===================== */
+.page {
+  background: #ffffff;
+  width: 100%;
+  border-radius: 18px;
+  padding: 70px 50px;
+  text-align: center;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.14);
+}
+
+/* PORTADA */
+.page.cover {
+  padding: 90px 50px;
+}
+
+.page.cover h1 {
+  font-size: min(10vw, 120px);
+  line-height: 1.1;
+  margin: 0;
+  text-transform: uppercase;
+  text-decoration: underline;
+}
+
+/* TEXTO */
+.page p {
+  font-size: 26px;
+  line-height: 1.6;
+  margin-top: 30px;
+}
+
+/* =====================
+   IMÁGENES VOCALES
+   ===================== */
+.vowel-image {
+  max-width: 320px;
+  width: 100%;
+  margin: 40px auto 20px;
+  display: block;
+}
+
+/* =====================
+   BOTONES NAVEGACIÓN
+   ===================== */
+.nav-button {
+  position: fixed;
+  bottom: 20px;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 44px;
+  font-weight: 900;
+  line-height: 1;
+
+  background: #ffffff;
+  color: #7e57c2;
+
+  border: 2px solid #e0e0e0;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.18);
+  user-select: none;
+}
+
+.next { right: 20px; }
+.prev { left: 20px; }
+
+/* =====================
+   MÓVIL
+   ===================== */
+@media (max-width: 600px) {
+  .page {
+    padding: 40px 28px;
+  }
+
+  .page.cover {
+    padding: 55px 28px;
+  }
+
+  .page p {
+    font-size: 20px;
+  }
+
+  .vowel-image {
+    max-width: 220px;
+  }
+
+  .nav-button {
+    width: 64px;
+    height: 64px;
+    font-size: 36px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="book">
+  <div id="page" class="page"></div>
+</div>
+
+<!-- 🔽 FLECHAS MÁS GRUESAS -->
+<div class="nav-button prev" onclick="prevPage()">◀</div>
+<div class="nav-button next" onclick="nextPage()">▶</div>
+
+<script>
+const pages = [
+  {
+    cover: true,
+    html: `
+      <h1>INSTRUCCIONES DE USO</h1>
+      <p>
+        Esta aplicación ha sido creada para afianzar los conocimientos adquiridos por nuestros hijos.
+        <br><br>
+        El niño o niña deberá reconocer la letra que aparezca en pantalla y, tras leerla en voz alta,
+        el padre o madre deberá leer el texto inferior en voz alta.
+        <br><br>
+        Una vez finalizado el proceso, pulsen el botón de continuar para seguir con la siguiente diapositiva.
+        <br><br>
+        Disfruten y esperamos que sea de su agrado.
+      </p>
+    `
+  },
+  {
+    html: `
+      <img src="assets/vocales/a.png" class="vowel-image" alt="Vocal A">
+      <p>Antes de nada, agradecerles su participación.</p>
+    `
+  },
+  {
+    html: `
+      <img src="assets/vocales/e.png" class="vowel-image" alt="Vocal E">
+      <p>Estamos muy felices de contar con vosotros</p>
+    `
+  },
+  {
+    html: `
+      <img src="assets/vocales/i.png" class="vowel-image" alt="Vocal I">
+      <p>Incluso impacientes podemos decir</p>
+    `
+  },
+  {
+    html: `
+      <img src="assets/vocales/o.png" class="vowel-image" alt="Vocal O">
+      <p>O ansiosos nuestras hijas e hijos como los vuestros de</p>
+    `
+  },
+  {
+    html: `
+      <img src="assets/vocales/u.png" class="vowel-image" alt="Vocal U">
+      <p>Un día de celebrar el cumpleaños de todos juntos</p>
+    `
+  },
+  {
+    html: `
+      <img src="assets/vocales/final.png" class="vowel-image" alt="Final">
+      <p>Os esperamos</p>
+    `
+  }
+];
+
+let currentPage = 0;
+const pageContainer = document.getElementById("page");
+
+function renderPage() {
+  pageContainer.classList.toggle("cover", !!pages[currentPage].cover);
+  pageContainer.innerHTML = pages[currentPage].html;
+}
+
+function nextPage() {
+  if (currentPage < pages.length - 1) {
+    currentPage++;
+    renderPage();
+  }
+}
+
+function prevPage() {
+  if (currentPage > 0) {
+    currentPage--;
+    renderPage();
+  }
+}
+
+renderPage();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+</script>
+
+</body>
+</html>
